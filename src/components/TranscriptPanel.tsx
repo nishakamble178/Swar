@@ -5,6 +5,7 @@ import {
   Eraser,
   Gauge,
   Languages,
+  MessageSquareQuote,
   Music2,
   Settings2,
   Square,
@@ -18,7 +19,31 @@ interface TranscriptPanelProps {
   committed: Prediction[];
   onClear: () => void;
   onRemoveLast: () => void;
+  onAppendSentence?: (sentence: string) => void;
 }
+
+const COMMON_SENTENCES: string[] = [
+  "Hello",
+  "How are you?",
+  "I am fine",
+  "Thank you",
+  "Please",
+  "Sorry",
+  "Yes",
+  "No",
+  "I don't understand",
+  "Can you help me?",
+  "I am hungry",
+  "I am thirsty",
+  "I need water",
+  "I need food",
+  "I want to go home",
+  "I am happy",
+  "I am sad",
+  "Help!",
+  "Where is hospital?",
+  "Goodbye",
+];
 
 // Curated list of common languages. We'll filter to the ones the browser supports.
 const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
@@ -48,7 +73,7 @@ const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
   { code: "ar-SA", label: "Arabic (العربية)" },
 ];
 
-export function TranscriptPanel({ committed, onClear, onRemoveLast }: TranscriptPanelProps) {
+export function TranscriptPanel({ committed, onClear, onRemoveLast, onAppendSentence }: TranscriptPanelProps) {
   const sentence = useMemo(() => committed.map((p) => p.label).join(" "), [committed]);
   const speech = useSpeech();
   const [copied, setCopied] = useState(false);
@@ -296,6 +321,25 @@ export function TranscriptPanel({ committed, onClear, onRemoveLast }: Transcript
           </div>
         )}
       </div>
+
+      {onAppendSentence && (
+        <div className="border-t border-border bg-background/20 px-5 py-4">
+          <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            <MessageSquareQuote className="h-3 w-3" /> Common sentences
+          </div>
+          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto pr-1">
+            {COMMON_SENTENCES.map((s) => (
+              <button
+                key={s}
+                onClick={() => onAppendSentence(s)}
+                className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/90 transition-colors hover:border-primary/60 hover:bg-secondary hover:text-foreground"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="border-t border-border bg-background/30 px-5 py-4">
         <div className="mb-3 rounded-xl border border-border bg-background/40 p-3 text-sm text-foreground/90">

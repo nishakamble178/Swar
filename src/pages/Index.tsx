@@ -13,6 +13,8 @@ const Index = () => {
   const handleCommit = (p: Prediction) => setCommitted((prev) => [...prev, p]);
   const removeLast = () => setCommitted((prev) => prev.slice(0, -1));
   const clear = () => setCommitted([]);
+  const appendSentence = (sentence: string) =>
+    setCommitted((prev) => [...prev, { label: sentence, confidence: 1 }]);
 
   return (
     <div className="relative min-h-screen">
@@ -64,6 +66,7 @@ const Index = () => {
               committed={committed}
               onClear={clear}
               onRemoveLast={removeLast}
+              onAppendSentence={appendSentence}
             />
           </div>
         </div>
