@@ -5,6 +5,7 @@ import {
   Eraser,
   Gauge,
   Languages,
+  MessageSquareQuote,
   Music2,
   Settings2,
   Square,
@@ -18,7 +19,31 @@ interface TranscriptPanelProps {
   committed: Prediction[];
   onClear: () => void;
   onRemoveLast: () => void;
+  onAppendSentence?: (sentence: string) => void;
 }
+
+const COMMON_SENTENCES: string[] = [
+  "Hello",
+  "How are you?",
+  "I am fine",
+  "Thank you",
+  "Please",
+  "Sorry",
+  "Yes",
+  "No",
+  "I don't understand",
+  "Can you help me?",
+  "I am hungry",
+  "I am thirsty",
+  "I need water",
+  "I need food",
+  "I want to go home",
+  "I am happy",
+  "I am sad",
+  "Help!",
+  "Where is hospital?",
+  "Goodbye",
+];
 
 // Curated list of common languages. We'll filter to the ones the browser supports.
 const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
@@ -48,7 +73,7 @@ const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
   { code: "ar-SA", label: "Arabic (العربية)" },
 ];
 
-export function TranscriptPanel({ committed, onClear, onRemoveLast }: TranscriptPanelProps) {
+export function TranscriptPanel({ committed, onClear, onRemoveLast, onAppendSentence }: TranscriptPanelProps) {
   const sentence = useMemo(() => committed.map((p) => p.label).join(" "), [committed]);
   const speech = useSpeech();
   const [copied, setCopied] = useState(false);
