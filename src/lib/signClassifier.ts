@@ -162,15 +162,17 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.15) +
       notExt(e.thumb, 0.05),
   });
-  // 2 → index + middle up (V shape).
+  // 2 → index + middle up, slightly spread (between U and V). De-prioritized
+  // so it doesn't steal from U (together) or V (wide).
   hits.push({
     label: "2",
     score:
-      ext(e.index, 0.35) +
-      ext(e.middle, 0.35) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.min(0.1, f.indexMiddleSpread * 0.4),
+      (ext(e.index, 0.32) +
+        ext(e.middle, 0.32) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.min(0.05, f.indexMiddleSpread * 0.2)) -
+      0.05,
   });
   // 3 → thumb + index + middle (ASL number 3).
   hits.push({
