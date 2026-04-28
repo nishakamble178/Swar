@@ -614,15 +614,18 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       ext(e.pinky, 0.2) +
       Math.min(0.1, f.indexMiddleSpread * 0.5),
   });
-  // 👉 Point → only index extended (similar to 1, distinct label).
+  // 👉 Point → only index extended, thumb NOT clearly out (distinguishes from "1"/L).
+  // Strong penalty if thumb is touching index (would be 9).
+  const pointThumbTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.INDEX.tip]) / f.scale;
   hits.push({
     label: "👉 Point",
     score:
-      ext(e.index, 0.45) +
-      notExt(e.middle, 0.15) +
-      notExt(e.ring, 0.15) +
-      notExt(e.pinky, 0.15) +
-      notExt(e.thumb, 0.05),
+      (ext(e.index, 0.5) +
+        notExt(e.middle, 0.18) +
+        notExt(e.ring, 0.18) +
+        notExt(e.pinky, 0.18) +
+        notExt(e.thumb, 0.1)) -
+      (pointThumbTouch < 0.18 ? 0.6 : 0),
   });
   // 🤞 Fingers Crossed → index + middle up, middle crossed over index.
   hits.push({
