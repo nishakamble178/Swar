@@ -648,29 +648,25 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
  */
 const SENTENCE_GESTURE_MAP: Record<string, string> = {
   "✋ Open Palm": "Hello",
-  "👋 Wave": "Hello", // alias if scorer returns this
+  G: "Good Morning",
+  E: "Good Evening",
   H: "How are you?",
-  F: "I am fine",
-  "🙏 Thanks": "Thank you", // alias
-  "🤲 Please": "Please",
+  F: "I am Fine",
+  Y: "Thank You",
   P: "Please",
   S: "Sorry",
   "👍 Thumbs Up": "Yes",
   "👎 Thumbs Down": "No",
-  Q: "I don't understand",
-  "🤙 Call Me": "Can you help me?",
-  "✊ Fist": "I am hungry",
-  T: "I am thirsty",
-  W: "I need water",
-  "🍴 Food": "I need food", // alias
-  "🤘 Rock": "I need food",
-  "🏠 Home": "I want to go home", // alias
-  "🤟 I Love You": "I am happy",
-  "✌️ Peace": "I am sad",
-  "🆘 Help": "Help!", // alias
+  U: "I Understand",
+  Q: "I Don't Understand",
+  "🤙 Call Me": "Can You Help Me?",
+  "✊ Fist": "I Am Hungry",
+  T: "I Am Thirsty",
+  W: "I Need Water",
+  "🤘 Rock": "I Need Food",
+  "🤟 I Love You": "I Am Happy",
+  "✌️ Peace": "I Am Sad",
   "🤞 Fingers Crossed": "Help!",
-  "🏥 Hospital": "Where is hospital?", // alias
-  "👌 OK": "Where is hospital?",
   "👉 Point": "Goodbye",
 };
 
