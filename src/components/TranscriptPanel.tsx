@@ -322,24 +322,22 @@ export function TranscriptPanel({ committed, onClear, onRemoveLast }: Transcript
         )}
       </div>
 
-      {onAppendSentence && (
-        <div className="border-t border-border bg-background/20 px-5 py-4">
-          <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            <MessageSquareQuote className="h-3 w-3" /> Common sentences
-          </div>
-          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto pr-1">
-            {COMMON_SENTENCES.map((s) => (
-              <button
-                key={s}
-                onClick={() => onAppendSentence(s)}
-                className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/90 transition-colors hover:border-primary/60 hover:bg-secondary hover:text-foreground"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+      <div className="border-t border-border bg-background/20 px-5 py-4">
+        <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <MessageSquareQuote className="h-3 w-3" /> Sign these to detect a sentence
         </div>
-      )}
+        <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
+          {SENTENCE_GUIDE.map((g) => (
+            <div
+              key={g.sentence}
+              className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-secondary/30 px-2.5 py-1.5"
+            >
+              <span className="truncate text-xs text-muted-foreground">{g.gesture}</span>
+              <span className="shrink-0 text-xs font-medium text-foreground">→ {g.sentence}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="border-t border-border bg-background/30 px-5 py-4">
         <div className="mb-3 rounded-xl border border-border bg-background/40 p-3 text-sm text-foreground/90">
