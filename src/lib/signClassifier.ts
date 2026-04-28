@@ -202,45 +202,54 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       ext(e.ring, 0.2) +
       ext(e.pinky, 0.2),
   });
+  // Touch gate: a number sign that requires "touch" must actually touch.
+  // If the touch distance > 0.12 of scale, treat the sign as not present.
+  const touchGate = (d: number) => (d < 0.12 ? 1 : d < 0.2 ? 0.4 : 0);
   // 6 → pinky touches thumb, other 3 fingers up.
   const sixTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.PINKY.tip]) / f.scale;
   hits.push({
     label: "6",
     score:
-      ext(e.index, 0.22) +
-      ext(e.middle, 0.22) +
-      ext(e.ring, 0.22) +
-      Math.max(0, 0.34 - sixTouch),
+      (ext(e.index, 0.22) +
+        ext(e.middle, 0.22) +
+        ext(e.ring, 0.22) +
+        notExt(e.pinky, 0.0) +
+        0.34 * touchGate(sixTouch)) -
+      (e.pinky ? 0.3 : 0),
   });
   // 7 → ring touches thumb.
   const sevenTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.RING.tip]) / f.scale;
   hits.push({
     label: "7",
     score:
-      ext(e.index, 0.22) +
-      ext(e.middle, 0.22) +
-      ext(e.pinky, 0.22) +
-      Math.max(0, 0.34 - sevenTouch),
+      (ext(e.index, 0.22) +
+        ext(e.middle, 0.22) +
+        ext(e.pinky, 0.22) +
+        0.34 * touchGate(sevenTouch)) -
+      (e.ring ? 0.3 : 0),
   });
   // 8 → middle touches thumb.
   const eightTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.MIDDLE.tip]) / f.scale;
   hits.push({
     label: "8",
     score:
-      ext(e.index, 0.22) +
-      ext(e.ring, 0.22) +
-      ext(e.pinky, 0.22) +
-      Math.max(0, 0.34 - eightTouch),
+      (ext(e.index, 0.22) +
+        ext(e.ring, 0.22) +
+        ext(e.pinky, 0.22) +
+        0.34 * touchGate(eightTouch)) -
+      (e.middle ? 0.3 : 0),
   });
-  // 9 → index touches thumb, others up.
+  // 9 → index touches thumb, others up. STRICT: must actually pinch.
   const nineTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.INDEX.tip]) / f.scale;
   hits.push({
     label: "9",
     score:
-      ext(e.middle, 0.22) +
-      ext(e.ring, 0.22) +
-      ext(e.pinky, 0.22) +
-      Math.max(0, 0.34 - nineTouch),
+      (ext(e.middle, 0.22) +
+        ext(e.ring, 0.22) +
+        ext(e.pinky, 0.22) +
+        0.5 * touchGate(nineTouch)) -
+      (e.index ? 0.4 : 0) -
+      (nineTouch > 0.18 ? 0.5 : 0),
   });
 
   // ===== Letters =====
