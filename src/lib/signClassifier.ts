@@ -668,28 +668,41 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
  * Each sentence is bound to a *unique* base sign so there is exactly one
  * gesture per sentence (no ambiguity, confidence stays as-is).
  */
+// Each sentence is bound to a *visually distinct* base sign — no two map
+// targets look alike, so the model never confuses them.
 const SENTENCE_GESTURE_MAP: Record<string, string> = {
+  // Emoji gestures (highly distinct shapes)
   "✋ Open Palm": "Hello",
-  G: "Good Morning",
-  E: "Good Evening",
-  H: "How are you?",
-  F: "I am Fine",
-  Y: "Thank You",
-  P: "Please",
-  S: "Sorry",
   "👍 Thumbs Up": "Yes",
   "👎 Thumbs Down": "No",
-  U: "I Understand",
-  Q: "I Don't Understand",
+  "👌 OK": "I Understand",
+  "🤘 Rock": "I Need Food",
   "🤙 Call Me": "Can You Help Me?",
   "✊ Fist": "I Am Hungry",
-  T: "I Am Thirsty",
-  W: "I Need Water",
-  "🤘 Rock": "I Need Food",
+  "👉 Point": "Goodbye",
+  "🤞 Fingers Crossed": "Help!",
   "🤟 I Love You": "I Am Happy",
   "✌️ Peace": "I Am Sad",
-  "🤞 Fingers Crossed": "Help!",
-  "👉 Point": "Goodbye",
+  // Visually unique letters
+  A: "Sorry",                  // fist with thumb on side — unique
+  B: "Please",                 // flat 4 fingers, thumb across
+  C: "Good Evening",           // curved hand
+  D: "Good Morning",           // single index up + pinch (unique vs 👉)
+  I: "I Am Thirsty",           // pinky only
+  L: "Thank You",              // thumb+index L-shape
+  W: "I Need Water",           // 3 fingers up
+  Y: "I am Fine",              // thumb+pinky out
+  // Visually unique numbers
+  "3": "How are you?",         // thumb+index+middle
+  "4": "I Don't Understand",   // 4 up, thumb folded
+  "6": "What is today's class?",   // pinky touches thumb
+  "7": "I have homework",          // ring touches thumb
+  "8": "Please repeat",            // middle touches thumb
+  "9": "I have a question",        // index touches thumb (pinch)
+  "5": "Can you explain?",         // all 5 fingers
+  G: "Thank you teacher",          // horizontal index (distinct from vertical D)
+  T: "Where is classroom?",        // fist with thumb between index/middle
+  H: "I am late",                  // horizontal 2 fingers
 };
 
 export function classifySign(landmarks: Landmark[]): SignCandidate[] {
