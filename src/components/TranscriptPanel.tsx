@@ -322,6 +322,25 @@ export function TranscriptPanel({ committed, onClear, onRemoveLast, onAppendSent
         )}
       </div>
 
+      {onAppendSentence && (
+        <div className="border-t border-border bg-background/20 px-5 py-4">
+          <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            <MessageSquareQuote className="h-3 w-3" /> Common sentences
+          </div>
+          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto pr-1">
+            {COMMON_SENTENCES.map((s) => (
+              <button
+                key={s}
+                onClick={() => onAppendSentence(s)}
+                className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/90 transition-colors hover:border-primary/60 hover:bg-secondary hover:text-foreground"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="border-t border-border bg-background/30 px-5 py-4">
         <div className="mb-3 rounded-xl border border-border bg-background/40 p-3 text-sm text-foreground/90">
           {sentence || (
