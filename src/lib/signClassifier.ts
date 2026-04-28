@@ -330,15 +330,20 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.15) +
       Math.max(0, 0.15 - gIndexHoriz / f.scale) * 1.0,
   });
-  // H → index + middle horizontal, together.
+  // H → index + middle HORIZONTAL, together. Requires horizontal orientation
+  // to distinguish from U (vertical, together).
+  const hHoriz = Math.abs(f.lm[FINGERS.INDEX.tip].y - f.lm[FINGERS.INDEX.mcp].y) / f.scale;
+  const isHorizontal = hHoriz < 0.3;
   hits.push({
     label: "H",
     score:
-      ext(e.index, 0.3) +
-      ext(e.middle, 0.3) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.max(0, 0.1 - f.indexMiddleSpread) * 1.0,
+      (ext(e.index, 0.28) +
+        ext(e.middle, 0.28) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.max(0, 0.1 - f.indexMiddleSpread) * 1.0 +
+        (isHorizontal ? 0.2 : 0)) -
+      (isHorizontal ? 0 : 0.25),
   });
   // I → only pinky up.
   hits.push({
