@@ -13,8 +13,6 @@ const Index = () => {
   const handleCommit = (p: Prediction) => setCommitted((prev) => [...prev, p]);
   const removeLast = () => setCommitted((prev) => prev.slice(0, -1));
   const clear = () => setCommitted([]);
-  const appendSentence = (sentence: string) =>
-    setCommitted((prev) => [...prev, { label: sentence, confidence: 1 }]);
 
   return (
     <div className="relative min-h-screen">
@@ -57,16 +55,15 @@ const Index = () => {
       </section>
 
       <section id="detect" className="mx-auto max-w-7xl px-4 pb-12 sm:px-6">
-        <div className="grid gap-6 lg:grid-cols-5">
-          <div className="lg:col-span-3">
+        <div className="grid gap-6 md:grid-cols-5">
+          <div className="md:col-span-3">
             <DetectionStage onCommit={handleCommit} />
           </div>
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2">
             <TranscriptPanel
               committed={committed}
               onClear={clear}
               onRemoveLast={removeLast}
-              onAppendSentence={appendSentence}
             />
           </div>
         </div>

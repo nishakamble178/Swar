@@ -19,30 +19,30 @@ interface TranscriptPanelProps {
   committed: Prediction[];
   onClear: () => void;
   onRemoveLast: () => void;
-  onAppendSentence?: (sentence: string) => void;
 }
 
-const COMMON_SENTENCES: string[] = [
-  "Hello",
-  "How are you?",
-  "I am fine",
-  "Thank you",
-  "Please",
-  "Sorry",
-  "Yes",
-  "No",
-  "I don't understand",
-  "Can you help me?",
-  "I am hungry",
-  "I am thirsty",
-  "I need water",
-  "I need food",
-  "I want to go home",
-  "I am happy",
-  "I am sad",
-  "Help!",
-  "Where is hospital?",
-  "Goodbye",
+// Reference of the gestures the detector maps to full sentences.
+// These match the SENTENCE_GESTURE_MAP in src/lib/signClassifier.ts so the
+// list users see is exactly what they can sign to trigger each phrase.
+const SENTENCE_GUIDE: { gesture: string; sentence: string }[] = [
+  { gesture: "✋ Open Palm", sentence: "Hello" },
+  { gesture: "🤙 Call Me", sentence: "Can you help me?" },
+  { gesture: "👍 Thumbs Up", sentence: "Yes" },
+  { gesture: "👎 Thumbs Down", sentence: "No" },
+  { gesture: "✌️ Peace", sentence: "I am sad" },
+  { gesture: "🤟 I Love You", sentence: "I am happy" },
+  { gesture: "✊ Fist", sentence: "I am hungry" },
+  { gesture: "🤘 Rock", sentence: "I need food" },
+  { gesture: "👌 OK", sentence: "Where is hospital?" },
+  { gesture: "👉 Point", sentence: "Goodbye" },
+  { gesture: "🤞 Fingers Crossed", sentence: "Help!" },
+  { gesture: "Sign letter H", sentence: "How are you?" },
+  { gesture: "Sign letter F", sentence: "I am fine" },
+  { gesture: "Sign letter P", sentence: "Please" },
+  { gesture: "Sign letter S", sentence: "Sorry" },
+  { gesture: "Sign letter Q", sentence: "I don't understand" },
+  { gesture: "Sign letter T", sentence: "I am thirsty" },
+  { gesture: "Sign letter W", sentence: "I need water" },
 ];
 
 // Curated list of common languages. We'll filter to the ones the browser supports.
@@ -73,7 +73,7 @@ const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
   { code: "ar-SA", label: "Arabic (العربية)" },
 ];
 
-export function TranscriptPanel({ committed, onClear, onRemoveLast, onAppendSentence }: TranscriptPanelProps) {
+export function TranscriptPanel({ committed, onClear, onRemoveLast }: TranscriptPanelProps) {
   const sentence = useMemo(() => committed.map((p) => p.label).join(" "), [committed]);
   const speech = useSpeech();
   const [copied, setCopied] = useState(false);
@@ -322,24 +322,22 @@ export function TranscriptPanel({ committed, onClear, onRemoveLast, onAppendSent
         )}
       </div>
 
-      {onAppendSentence && (
-        <div className="border-t border-border bg-background/20 px-5 py-4">
-          <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            <MessageSquareQuote className="h-3 w-3" /> Common sentences
-          </div>
-          <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto pr-1">
-            {COMMON_SENTENCES.map((s) => (
-              <button
-                key={s}
-                onClick={() => onAppendSentence(s)}
-                className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/90 transition-colors hover:border-primary/60 hover:bg-secondary hover:text-foreground"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+      <div className="border-t border-border bg-background/20 px-5 py-4">
+        <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <MessageSquareQuote className="h-3 w-3" /> Sign these to detect a sentence
         </div>
-      )}
+        <div className="max-h-40 space-y-1 overflow-y-auto pr-1">
+          {SENTENCE_GUIDE.map((g) => (
+            <div
+              key={g.sentence}
+              className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-secondary/30 px-2.5 py-1.5"
+            >
+              <span className="truncate text-xs text-muted-foreground">{g.gesture}</span>
+              <span className="shrink-0 text-xs font-medium text-foreground">→ {g.sentence}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="border-t border-border bg-background/30 px-5 py-4">
         <div className="mb-3 rounded-xl border border-border bg-background/40 p-3 text-sm text-foreground/90">
