@@ -19,30 +19,30 @@ interface TranscriptPanelProps {
   committed: Prediction[];
   onClear: () => void;
   onRemoveLast: () => void;
-  onAppendSentence?: (sentence: string) => void;
 }
 
-const COMMON_SENTENCES: string[] = [
-  "Hello",
-  "How are you?",
-  "I am fine",
-  "Thank you",
-  "Please",
-  "Sorry",
-  "Yes",
-  "No",
-  "I don't understand",
-  "Can you help me?",
-  "I am hungry",
-  "I am thirsty",
-  "I need water",
-  "I need food",
-  "I want to go home",
-  "I am happy",
-  "I am sad",
-  "Help!",
-  "Where is hospital?",
-  "Goodbye",
+// Reference of the gestures the detector maps to full sentences.
+// These match the SENTENCE_GESTURE_MAP in src/lib/signClassifier.ts so the
+// list users see is exactly what they can sign to trigger each phrase.
+const SENTENCE_GUIDE: { gesture: string; sentence: string }[] = [
+  { gesture: "✋ Open Palm", sentence: "Hello" },
+  { gesture: "🤙 Call Me", sentence: "Can you help me?" },
+  { gesture: "👍 Thumbs Up", sentence: "Yes" },
+  { gesture: "👎 Thumbs Down", sentence: "No" },
+  { gesture: "✌️ Peace", sentence: "I am sad" },
+  { gesture: "🤟 I Love You", sentence: "I am happy" },
+  { gesture: "✊ Fist", sentence: "I am hungry" },
+  { gesture: "🤘 Rock", sentence: "I need food" },
+  { gesture: "👌 OK", sentence: "Where is hospital?" },
+  { gesture: "👉 Point", sentence: "Goodbye" },
+  { gesture: "🤞 Fingers Crossed", sentence: "Help!" },
+  { gesture: "Sign letter H", sentence: "How are you?" },
+  { gesture: "Sign letter F", sentence: "I am fine" },
+  { gesture: "Sign letter P", sentence: "Please" },
+  { gesture: "Sign letter S", sentence: "Sorry" },
+  { gesture: "Sign letter Q", sentence: "I don't understand" },
+  { gesture: "Sign letter T", sentence: "I am thirsty" },
+  { gesture: "Sign letter W", sentence: "I need water" },
 ];
 
 // Curated list of common languages. We'll filter to the ones the browser supports.
@@ -73,7 +73,7 @@ const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
   { code: "ar-SA", label: "Arabic (العربية)" },
 ];
 
-export function TranscriptPanel({ committed, onClear, onRemoveLast, onAppendSentence }: TranscriptPanelProps) {
+export function TranscriptPanel({ committed, onClear, onRemoveLast }: TranscriptPanelProps) {
   const sentence = useMemo(() => committed.map((p) => p.label).join(" "), [committed]);
   const speech = useSpeech();
   const [copied, setCopied] = useState(false);
