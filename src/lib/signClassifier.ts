@@ -558,16 +558,17 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.18) +
       ext(thumbDown, 0.15),
   });
-  // ✌️ Peace → index + middle up spread, others curled (similar to V but distinct label).
+  // ✌️ Peace → index + middle up, well spread (wider than V threshold).
   hits.push({
     label: "✌️ Peace",
     score:
-      ext(e.index, 0.28) +
-      ext(e.middle, 0.28) +
-      notExt(e.ring, 0.12) +
-      notExt(e.pinky, 0.12) +
-      notExt(e.thumb, 0.05) +
-      Math.min(0.15, f.indexMiddleSpread * 0.7),
+      (ext(e.index, 0.3) +
+        ext(e.middle, 0.3) +
+        notExt(e.ring, 0.12) +
+        notExt(e.pinky, 0.12) +
+        notExt(e.thumb, 0.05) +
+        Math.min(0.2, f.indexMiddleSpread * 1.1)) -
+      Math.max(0, 0.18 - f.indexMiddleSpread) * 1.0,
   });
   // 👌 OK → thumb-index circle, middle/ring/pinky extended.
   const okTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.INDEX.tip]) / f.scale;
