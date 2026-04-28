@@ -637,6 +637,43 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
   return hits.sort((a, b) => b.score - a.score);
 }
 
+/**
+ * Maps a base sign label (letter / number / emoji-gesture) to a full
+ * sentence. The detection geometry, scoring, and confidence are unchanged —
+ * we simply rename the output label so users can express common phrases
+ * with a single hand sign.
+ *
+ * Each sentence is bound to a *unique* base sign so there is exactly one
+ * gesture per sentence (no ambiguity, confidence stays as-is).
+ */
+const SENTENCE_GESTURE_MAP: Record<string, string> = {
+  "✋ Open Palm": "Hello",
+  "👋 Wave": "Hello", // alias if scorer returns this
+  H: "How are you?",
+  F: "I am fine",
+  "🙏 Thanks": "Thank you", // alias
+  "🤲 Please": "Please",
+  P: "Please",
+  S: "Sorry",
+  "👍 Thumbs Up": "Yes",
+  "👎 Thumbs Down": "No",
+  Q: "I don't understand",
+  "🤙 Call Me": "Can you help me?",
+  "✊ Fist": "I am hungry",
+  T: "I am thirsty",
+  W: "I need water",
+  "🍴 Food": "I need food", // alias
+  "🤘 Rock": "I need food",
+  "🏠 Home": "I want to go home", // alias
+  "🤟 I Love You": "I am happy",
+  "✌️ Peace": "I am sad",
+  "🆘 Help": "Help!", // alias
+  "🤞 Fingers Crossed": "Help!",
+  "🏥 Hospital": "Where is hospital?", // alias
+  "👌 OK": "Where is hospital?",
+  "👉 Point": "Goodbye",
+};
+
 export function classifySign(landmarks: Landmark[]): SignCandidate[] {
   if (!landmarks || landmarks.length < 21) return [];
   const features = computeFeatures(landmarks);
@@ -645,5 +682,9 @@ export function classifySign(landmarks: Landmark[]): SignCandidate[] {
   const top = ranked.slice(0, 5);
   const expScores = top.map((h) => Math.exp(h.score * 4));
   const sum = expScores.reduce((a, b) => a + b, 0) || 1;
-  return top.map((h, i) => ({ label: h.label, confidence: expScores[i] / sum }));
+  return top.map((h, i) => ({
+    label: SENTENCE_GESTURE_MAP[h.label] ?? h.label,
+    confidence: expScores[i] / sum,
+  }));
 }
+
