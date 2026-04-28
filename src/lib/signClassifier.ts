@@ -162,15 +162,17 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.15) +
       notExt(e.thumb, 0.05),
   });
-  // 2 → index + middle up (V shape).
+  // 2 → index + middle up, slightly spread (between U and V). De-prioritized
+  // so it doesn't steal from U (together) or V (wide).
   hits.push({
     label: "2",
     score:
-      ext(e.index, 0.35) +
-      ext(e.middle, 0.35) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.min(0.1, f.indexMiddleSpread * 0.4),
+      (ext(e.index, 0.32) +
+        ext(e.middle, 0.32) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.min(0.05, f.indexMiddleSpread * 0.2)) -
+      0.05,
   });
   // 3 → thumb + index + middle (ASL number 3).
   hits.push({
@@ -202,45 +204,54 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       ext(e.ring, 0.2) +
       ext(e.pinky, 0.2),
   });
+  // Touch gate: a number sign that requires "touch" must actually touch.
+  // If the touch distance > 0.12 of scale, treat the sign as not present.
+  const touchGate = (d: number) => (d < 0.12 ? 1 : d < 0.2 ? 0.4 : 0);
   // 6 → pinky touches thumb, other 3 fingers up.
   const sixTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.PINKY.tip]) / f.scale;
   hits.push({
     label: "6",
     score:
-      ext(e.index, 0.22) +
-      ext(e.middle, 0.22) +
-      ext(e.ring, 0.22) +
-      Math.max(0, 0.34 - sixTouch),
+      (ext(e.index, 0.22) +
+        ext(e.middle, 0.22) +
+        ext(e.ring, 0.22) +
+        notExt(e.pinky, 0.0) +
+        0.34 * touchGate(sixTouch)) -
+      (e.pinky ? 0.3 : 0),
   });
   // 7 → ring touches thumb.
   const sevenTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.RING.tip]) / f.scale;
   hits.push({
     label: "7",
     score:
-      ext(e.index, 0.22) +
-      ext(e.middle, 0.22) +
-      ext(e.pinky, 0.22) +
-      Math.max(0, 0.34 - sevenTouch),
+      (ext(e.index, 0.22) +
+        ext(e.middle, 0.22) +
+        ext(e.pinky, 0.22) +
+        0.34 * touchGate(sevenTouch)) -
+      (e.ring ? 0.3 : 0),
   });
   // 8 → middle touches thumb.
   const eightTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.MIDDLE.tip]) / f.scale;
   hits.push({
     label: "8",
     score:
-      ext(e.index, 0.22) +
-      ext(e.ring, 0.22) +
-      ext(e.pinky, 0.22) +
-      Math.max(0, 0.34 - eightTouch),
+      (ext(e.index, 0.22) +
+        ext(e.ring, 0.22) +
+        ext(e.pinky, 0.22) +
+        0.34 * touchGate(eightTouch)) -
+      (e.middle ? 0.3 : 0),
   });
-  // 9 → index touches thumb, others up.
+  // 9 → index touches thumb, others up. STRICT: must actually pinch.
   const nineTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.INDEX.tip]) / f.scale;
   hits.push({
     label: "9",
     score:
-      ext(e.middle, 0.22) +
-      ext(e.ring, 0.22) +
-      ext(e.pinky, 0.22) +
-      Math.max(0, 0.34 - nineTouch),
+      (ext(e.middle, 0.22) +
+        ext(e.ring, 0.22) +
+        ext(e.pinky, 0.22) +
+        0.5 * touchGate(nineTouch)) -
+      (e.index ? 0.4 : 0) -
+      (nineTouch > 0.18 ? 0.5 : 0),
   });
 
   // ===== Letters =====
@@ -319,15 +330,20 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.15) +
       Math.max(0, 0.15 - gIndexHoriz / f.scale) * 1.0,
   });
-  // H → index + middle horizontal, together.
+  // H → index + middle HORIZONTAL, together. Requires horizontal orientation
+  // to distinguish from U (vertical, together).
+  const hHoriz = Math.abs(f.lm[FINGERS.INDEX.tip].y - f.lm[FINGERS.INDEX.mcp].y) / f.scale;
+  const isHorizontal = hHoriz < 0.3;
   hits.push({
     label: "H",
     score:
-      ext(e.index, 0.3) +
-      ext(e.middle, 0.3) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.max(0, 0.1 - f.indexMiddleSpread) * 1.0,
+      (ext(e.index, 0.28) +
+        ext(e.middle, 0.28) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.max(0, 0.1 - f.indexMiddleSpread) * 1.0 +
+        (isHorizontal ? 0.2 : 0)) -
+      (isHorizontal ? 0 : 0.25),
   });
   // I → only pinky up.
   hits.push({
@@ -453,25 +469,27 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.15) +
       Math.max(0, 0.25 - tThumbBetween) * 1.0,
   });
-  // U → index + middle up together.
+  // U → index + middle up TOGETHER (very low spread). Penalize spread.
   hits.push({
     label: "U",
     score:
-      ext(e.index, 0.32) +
-      ext(e.middle, 0.32) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.max(0, 0.08 - f.indexMiddleSpread) * 1.0,
+      (ext(e.index, 0.32) +
+        ext(e.middle, 0.32) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.max(0, 0.08 - f.indexMiddleSpread) * 2.0) -
+      Math.max(0, f.indexMiddleSpread - 0.08) * 2.5,
   });
-  // V → index + middle up, spread.
+  // V → index + middle up, SPREAD. Penalize when together.
   hits.push({
     label: "V",
     score:
-      ext(e.index, 0.3) +
-      ext(e.middle, 0.3) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.min(0.2, f.indexMiddleSpread * 0.8),
+      (ext(e.index, 0.3) +
+        ext(e.middle, 0.3) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.min(0.2, f.indexMiddleSpread * 1.0)) -
+      Math.max(0, 0.12 - f.indexMiddleSpread) * 1.5,
   });
   // W → index + middle + ring up.
   hits.push({
@@ -540,16 +558,17 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.18) +
       ext(thumbDown, 0.15),
   });
-  // ✌️ Peace → index + middle up spread, others curled (similar to V but distinct label).
+  // ✌️ Peace → index + middle up, well spread (wider than V threshold).
   hits.push({
     label: "✌️ Peace",
     score:
-      ext(e.index, 0.28) +
-      ext(e.middle, 0.28) +
-      notExt(e.ring, 0.12) +
-      notExt(e.pinky, 0.12) +
-      notExt(e.thumb, 0.05) +
-      Math.min(0.15, f.indexMiddleSpread * 0.7),
+      (ext(e.index, 0.3) +
+        ext(e.middle, 0.3) +
+        notExt(e.ring, 0.12) +
+        notExt(e.pinky, 0.12) +
+        notExt(e.thumb, 0.05) +
+        Math.min(0.2, f.indexMiddleSpread * 1.1)) -
+      Math.max(0, 0.18 - f.indexMiddleSpread) * 1.0,
   });
   // 👌 OK → thumb-index circle, middle/ring/pinky extended.
   const okTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.INDEX.tip]) / f.scale;
@@ -603,15 +622,18 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       ext(e.pinky, 0.2) +
       Math.min(0.1, f.indexMiddleSpread * 0.5),
   });
-  // 👉 Point → only index extended (similar to 1, distinct label).
+  // 👉 Point → only index extended, thumb NOT clearly out (distinguishes from "1"/L).
+  // Strong penalty if thumb is touching index (would be 9).
+  const pointThumbTouch = dist(f.lm[FINGERS.THUMB.tip], f.lm[FINGERS.INDEX.tip]) / f.scale;
   hits.push({
     label: "👉 Point",
     score:
-      ext(e.index, 0.45) +
-      notExt(e.middle, 0.15) +
-      notExt(e.ring, 0.15) +
-      notExt(e.pinky, 0.15) +
-      notExt(e.thumb, 0.05),
+      (ext(e.index, 0.5) +
+        notExt(e.middle, 0.18) +
+        notExt(e.ring, 0.18) +
+        notExt(e.pinky, 0.18) +
+        notExt(e.thumb, 0.1)) -
+      (pointThumbTouch < 0.18 ? 0.6 : 0),
   });
   // 🤞 Fingers Crossed → index + middle up, middle crossed over index.
   hits.push({
