@@ -462,25 +462,27 @@ function scoreAllSigns(f: HandFeatures): RuleHit[] {
       notExt(e.pinky, 0.15) +
       Math.max(0, 0.25 - tThumbBetween) * 1.0,
   });
-  // U → index + middle up together.
+  // U → index + middle up TOGETHER (very low spread). Penalize spread.
   hits.push({
     label: "U",
     score:
-      ext(e.index, 0.32) +
-      ext(e.middle, 0.32) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.max(0, 0.08 - f.indexMiddleSpread) * 1.0,
+      (ext(e.index, 0.32) +
+        ext(e.middle, 0.32) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.max(0, 0.08 - f.indexMiddleSpread) * 2.0) -
+      Math.max(0, f.indexMiddleSpread - 0.08) * 2.5,
   });
-  // V → index + middle up, spread.
+  // V → index + middle up, SPREAD. Penalize when together.
   hits.push({
     label: "V",
     score:
-      ext(e.index, 0.3) +
-      ext(e.middle, 0.3) +
-      notExt(e.ring, 0.1) +
-      notExt(e.pinky, 0.1) +
-      Math.min(0.2, f.indexMiddleSpread * 0.8),
+      (ext(e.index, 0.3) +
+        ext(e.middle, 0.3) +
+        notExt(e.ring, 0.1) +
+        notExt(e.pinky, 0.1) +
+        Math.min(0.2, f.indexMiddleSpread * 1.0)) -
+      Math.max(0, 0.12 - f.indexMiddleSpread) * 1.5,
   });
   // W → index + middle + ring up.
   hits.push({
