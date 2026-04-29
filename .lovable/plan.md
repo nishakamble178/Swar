@@ -1,32 +1,62 @@
-## Important: what's actually possible here
+# Add Real Hand-Sign Photos to the Background
 
-You asked to "train the model" to recognize 21 full sentence gestures in real time. I want to be upfront before we spend effort:
+## Goal
+Replace the current AI-generated abstract visuals with **real photographs of hand signs** (sign language gestures) layered into the background, so the landing page feels authentic, human, and on-theme with SwarSetu's mission.
 
-**Real sentence-level sign recognition is not something I can deliver inside this Lovable project.** Here's why:
+## What the user will see
+- A subtle collage of real hand-sign photos floating in the background corners and edges (not centered, so they never block the camera or transcript).
+- Photos are softly faded, slightly blurred at the edges, and tinted with the brand purple/blue gradient so they blend with the existing nebula/aurora look instead of feeling like stock photos pasted on top.
+- Gentle float / drift animation on 1–2 of them for life.
+- Fully responsive — on mobile only 1–2 photos show; on desktop up to 4 are visible at the edges.
 
-1. **Real sentence signs are dynamic, two-handed, and use facial cues.** Phrases like "How are you?", "Good Morning", "Thank You", "I Am Hungry" are *motion sequences* over 1–3 seconds, often with both hands and mouth movement. A static-frame classifier cannot represent them.
-2. **Training a real model requires a labeled video dataset** (hundreds of clips per phrase from multiple signers), a temporal model (LSTM / Transformer / 3D-CNN over MediaPipe landmark sequences), a GPU training pipeline, evaluation, and conversion to TF.js. That's a multi-week ML project, not an in-app code change. Lovable's sandbox cannot collect a dataset, train a temporal model, or ship calibrated confidence scores for it.
-3. **The current detector is a hand-shape rule engine** (`src/lib/signClassifier.ts`) running on single-frame MediaPipe landmarks. It only knows static poses (A–Z, 0–9, a few emoji gestures). The bundled `public/model/model.json` CNN is unused by the live pipeline.
-4. **"No change in confidence" is not achievable for genuinely new classes.** Any honest classifier reports lower confidence on signs it was never trained on. The previous step (mapping one gesture to one sentence label) preserved confidence only because nothing actually changed under the hood — it was a rename.
+## Source of the photos
+We will use **real, free-to-use hand / sign-language photographs from Unsplash** (CC0-style license, no attribution required). Candidates:
+- Open palm / "Hello" wave
+- Thumbs up
+- Peace sign / V
+- OK sign
+- Pointing hand
+- Two hands signing
 
-If I claimed otherwise and shipped a "trained sentence model," it would be fake — either a lookup table dressed up as ML, or a model that misfires constantly. I won't do that.
+These will be downloaded into `src/assets/` as real `.jpg` files (e.g. `hand-hello.jpg`, `hand-peace.jpg`, `hand-ok.jpg`, `hand-thumbsup.jpg`) so they're bundled with the app and load instantly.
 
-## What I can realistically build (pick one)
+If a particular Unsplash fetch fails, we fall back to a different real photo from the same source — never AI-generated.
 
-### Option A — Honest 1-gesture-per-sentence mapping (recommended, what's already partly in place)
-Extend the existing gesture→sentence map to cover all 21 phrases by binding each to a unique static hand pose the rule engine already detects (letters + emoji-gestures). Confidence stays exactly as the underlying gesture's confidence. Already wired for ~18 of these; I'll fill the gaps (Good Morning, Good Evening, I Understand, I Am Sad, etc.) and update the on-screen reference guide. **Real, accurate, no fake ML.**
+## Implementation
 
-### Option B — Two-step "phrase composer"
-Detect a short prefix sign (e.g. ✋ Open Palm) to enter "phrase mode," then a second sign picks the phrase from a small menu shown on screen. More phrases, still honest.
+### 1. Download real photos
+Fetch 4 real hand-sign photographs from Unsplash and save them to `src/assets/`:
+- `hand-hello.jpg`
+- `hand-peace.jpg`
+- `hand-ok.jpg`
+- `hand-thumbsup.jpg`
 
-### Option C — Voice-input phrasebook
-Add a phrasebook UI: a grid of the 21 sentences the user can tap or trigger by voice. Speaks them aloud through the same TTS. Useful as an accessibility tool, but not sign-driven.
+### 2. Update `src/components/SceneryBackground.tsx`
+- Keep the existing nebula sky, aurora blobs, grid overlay, and wave ribbon (they provide the cinematic depth).
+- **Remove** the AI-looking `glass-hand.png` and `orb-wave.png` side accents and the large `hero-bg.jpg` top hero (or dial it way down) so the real photos become the focal background texture.
+- Add a new layer that positions the 4 real hand photos around the viewport edges:
+  - top-left, top-right, bottom-left, bottom-right (desktop)
+  - only top-right + bottom-left visible on mobile
+- Each photo:
+  - `object-cover`, rounded, ~30–40vh tall
+  - Soft radial mask so edges fade to transparent (no hard rectangles)
+  - `mix-blend-luminosity` or `mix-blend-screen` + low opacity (~0.25 light / ~0.35 dark) so the brand color tints them
+  - `aria-hidden`, `pointer-events-none`, `-z-10`
+  - `loading="lazy"`, explicit `width`/`height` for CLS
+- Apply existing `animate-float` / `animate-bg-drift` to 1–2 of them for subtle motion.
 
-### Option D — Plan a real ML pipeline (out of scope for Lovable)
-I write the training pipeline (Python + MediaPipe + Keras LSTM) as a separate repo for you to run on Colab/your machine, collect ~50 clips/phrase yourself, train, export to TF.js, then drop the model into this app. I can scaffold the trainer code, but **you** must record the dataset and run training. Several days of your time minimum.
+### 3. No changes to detection, transcript, or layout
+The detection stage (`DetectionStage`) and transcript panel (`TranscriptPanel`) are untouched. Confidence, gesture mappings, and the side-by-side camera + transcript layout stay exactly as they are.
 
-## My recommendation
+## Technical notes
+- Photos go in `src/assets/` (not `public/`) so Vite hashes and optimizes them.
+- Use `import` statements like the existing background does — no raw URLs.
+- Masks use `[mask-image:radial-gradient(...)]` Tailwind arbitrary values, matching the existing style in `SceneryBackground.tsx`.
+- No new dependencies.
 
-Go with **Option A** now (immediate, accurate, side-by-side layout already done), and if you want true sentence detection later, do **Option D** as a separate effort.
-
-Tell me which option to proceed with, or push back if you want something different.
+## Files touched
+- `src/assets/hand-hello.jpg` (new, real photo)
+- `src/assets/hand-peace.jpg` (new, real photo)
+- `src/assets/hand-ok.jpg` (new, real photo)
+- `src/assets/hand-thumbsup.jpg` (new, real photo)
+- `src/components/SceneryBackground.tsx` (edited)
