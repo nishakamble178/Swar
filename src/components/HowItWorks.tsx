@@ -31,17 +31,25 @@ export function HowItWorks() {
         </h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {steps.map((s) => (
+      <div className="grid gap-5 sm:grid-cols-3">
+        {steps.map((s, i) => (
           <div
             key={s.title}
-            className="glass-card group rounded-2xl p-6 transition-transform hover:-translate-y-1"
+            className="glass-card gradient-border group relative overflow-hidden rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-glow"
           >
-            <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-primary opacity-10 blur-2xl transition-opacity duration-500 group-hover:opacity-30"
+            />
+            <div className="absolute right-5 top-5 text-5xl font-black leading-none text-foreground/5 transition-colors group-hover:text-primary/15">
+              0{i + 1}
+            </div>
+            <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <s.icon className="h-5 w-5 text-primary-foreground" />
             </div>
-            <h3 className="mb-1 text-lg font-semibold">{s.title}</h3>
-            <p className="text-sm text-muted-foreground">{s.desc}</p>
+            <h3 className="mb-2 text-lg font-semibold">{s.title}</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+            <div className="mt-5 h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
         ))}
       </div>

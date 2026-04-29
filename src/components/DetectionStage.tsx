@@ -60,7 +60,16 @@ export function DetectionStage({ onPrediction, onCommit }: DetectionStageProps) 
           className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-gradient-primary opacity-20 blur-3xl"
         />
 
-        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black/60">
+        <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-border bg-black/60 ring-1 ring-primary/20 ring-offset-2 ring-offset-background/0">
+          {/* Cinematic corner brackets */}
+          {isActive && (
+            <>
+              <span aria-hidden className="pointer-events-none absolute left-3 top-3 z-20 h-5 w-5 border-l-2 border-t-2 border-primary-glow/80" />
+              <span aria-hidden className="pointer-events-none absolute right-3 top-3 z-20 h-5 w-5 border-r-2 border-t-2 border-primary-glow/80" />
+              <span aria-hidden className="pointer-events-none absolute bottom-3 left-3 z-20 h-5 w-5 border-b-2 border-l-2 border-primary-glow/80" />
+              <span aria-hidden className="pointer-events-none absolute bottom-3 right-3 z-20 h-5 w-5 border-b-2 border-r-2 border-primary-glow/80" />
+            </>
+          )}
           <div className="absolute inset-0 -scale-x-100">
             <video
               ref={videoRef}
