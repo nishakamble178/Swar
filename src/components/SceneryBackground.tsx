@@ -3,6 +3,10 @@ import nebula from "@/assets/nebula.jpg";
 import waveRibbon from "@/assets/wave-ribbon.png";
 import glassHand from "@/assets/glass-hand.png";
 import orbWave from "@/assets/orb-wave.png";
+import signHand1 from "@/assets/sign-hand-1.jpg";
+import signHand2 from "@/assets/sign-hand-2.jpg";
+import signHand3 from "@/assets/sign-hand-3.jpg";
+import signHand4 from "@/assets/sign-hand-4.jpg";
 
 /**
  * Full-bleed cinematic background:
