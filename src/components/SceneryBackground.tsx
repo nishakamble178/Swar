@@ -3,10 +3,6 @@ import nebula from "@/assets/nebula.jpg";
 import waveRibbon from "@/assets/wave-ribbon.png";
 import glassHand from "@/assets/glass-hand.png";
 import orbWave from "@/assets/orb-wave.png";
-import signHand1 from "@/assets/sign-hand-1.jpg";
-import signHand2 from "@/assets/sign-hand-2.jpg";
-import signHand3 from "@/assets/sign-hand-3.jpg";
-import signHand4 from "@/assets/sign-hand-4.jpg";
 
 /**
  * Full-bleed cinematic background:
@@ -87,48 +83,6 @@ export function SceneryBackground() {
         height={1024}
         loading="lazy"
         className="pointer-events-none fixed -left-32 top-[35vh] -z-10 hidden h-[45vh] w-auto select-none opacity-25 mix-blend-screen lg:block dark:opacity-35"
-      />
-
-      {/* 6. Real hand-sign photo accents — floating around the page */}
-      <img
-        aria-hidden
-        src={signHand1}
-        alt=""
-        width={1024}
-        height={1024}
-        loading="lazy"
-        style={{ animationDelay: "0s" }}
-        className="pointer-events-none fixed left-[3%] top-[18vh] -z-10 hidden h-40 w-40 select-none rounded-3xl object-cover opacity-40 shadow-glow ring-1 ring-primary/30 [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_85%)] animate-float md:block lg:h-52 lg:w-52 dark:opacity-55"
-      />
-      <img
-        aria-hidden
-        src={signHand2}
-        alt=""
-        width={1024}
-        height={1024}
-        loading="lazy"
-        style={{ animationDelay: "1.5s" }}
-        className="pointer-events-none fixed right-[4%] top-[22vh] -z-10 hidden h-40 w-40 select-none rounded-3xl object-cover opacity-40 shadow-glow ring-1 ring-accent/30 [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_85%)] animate-float md:block lg:h-52 lg:w-52 dark:opacity-55"
-      />
-      <img
-        aria-hidden
-        src={signHand3}
-        alt=""
-        width={1024}
-        height={1024}
-        loading="lazy"
-        style={{ animationDelay: "0.8s" }}
-        className="pointer-events-none fixed left-[5%] top-[78vh] -z-10 hidden h-36 w-36 select-none rounded-3xl object-cover opacity-35 shadow-glow ring-1 ring-primary-glow/30 [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_85%)] animate-float lg:block lg:h-48 lg:w-48 dark:opacity-50"
-      />
-      <img
-        aria-hidden
-        src={signHand4}
-        alt=""
-        width={1024}
-        height={1024}
-        loading="lazy"
-        style={{ animationDelay: "2.2s" }}
-        className="pointer-events-none fixed right-[6%] top-[82vh] -z-10 hidden h-36 w-36 select-none rounded-3xl object-cover opacity-35 shadow-glow ring-1 ring-accent/30 [mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_85%)] animate-float lg:block lg:h-48 lg:w-48 dark:opacity-50"
       />
     </>
   );
