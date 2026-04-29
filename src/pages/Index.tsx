@@ -92,6 +92,8 @@ const Index = () => {
         </div>
       </section>
 
+      <SignGallery />
+
       <HowItWorks />
 
       <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
