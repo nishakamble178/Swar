@@ -5,6 +5,7 @@ import { DetectionStage } from "@/components/DetectionStage";
 import { TranscriptPanel } from "@/components/TranscriptPanel";
 import { HowItWorks } from "@/components/HowItWorks";
 import { SceneryBackground } from "@/components/SceneryBackground";
+import { SignGallery } from "@/components/SignGallery";
 import type { Prediction } from "@/hooks/useSignDetection";
 
 const Index = () => {
@@ -90,6 +91,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <SignGallery />
 
       <HowItWorks />
 
